@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"e:/python/pythonProject/fn-proxy\" log --oneline -5)",
+      "Bash(gh release:*)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}

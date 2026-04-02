@@ -1,26 +1,14 @@
-# 使用官方的 Go 镜像作为基础镜像
-FROM golang:1.19-alpine as builder
+FROM alpine:3.20
 
-# 设置工作目录
-WORKDIR /go/src/goproxy
+RUN apk add --no-cache ca-certificates tzdata
 
-# 下载 GoProxy 源代码
-RUN git clone https://github.com/snail007/goproxy.git .
+WORKDIR /opt/proxy
 
-# 编译 GoProxy
-RUN go build -o goproxy main.go
+COPY proxy/ /opt/proxy/
 
-# 使用最小的 Alpine 镜像来构建运行时容器
-FROM alpine:latest
+RUN chmod +x /opt/proxy/proxy
 
-# 安装必要的运行时依赖（如果需要）
-RUN apk add --no-cache bash
+EXPOSE 9000
 
-# 设置工作目录
-WORKDIR /root/goproxy
-
-# 从构建阶段复制可执行文件
-COPY --from=builder /go/src/goproxy/goproxy /usr/local/bin/goproxy
-
-# 配置 GoProxy 启动时的默认命令
-CMD ["goproxy", "-L", "0.0.0.0:8080"]
+ENTRYPOINT ["/opt/proxy/proxy"]
+CMD ["http", "-p", ":9000"]
